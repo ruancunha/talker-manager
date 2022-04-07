@@ -36,7 +36,6 @@ app.get('/talker/search', validateToken, async (req, res) => {
   return res.status(200).json(filteredTalkers);
 });
 
-
 app.get('/talker/:id', async (req, res) => {
   const { id } = req.params;
   const talkers = await talkersUtils.getTalkers();
