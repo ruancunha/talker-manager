@@ -5,4 +5,16 @@ function getTalkers() {
     .then((content) => JSON.parse(content));
 }
 
-module.exports = { getTalkers };
+function setTalkers(newTalker) {
+  return fs.writeFile('./talker.json', JSON.stringify(newTalker));
+}
+
+const generateId = () => {
+  const json = fs.readFile('./talker.json', 'utf-8')
+    .then((content) => JSON.parse(content))
+    .then((arr) => arr.length)
+    .then((num) => num + 1);
+  return json;
+};
+
+module.exports = { getTalkers, setTalkers, generateId };

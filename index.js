@@ -2,7 +2,14 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const talkersUtils = require('./fs-utils');
-const { validateEmail, validatePassword } = require('./services/validations');
+const {
+  validateName,
+  validateEmail,
+  validatePassword,
+  validateAge,
+  validateTalk,
+  validateTalkContent,
+  validateToken } = require('./services/validations');
 const { generateToken } = require('./services/token');
 
 const app = express();
@@ -38,6 +45,24 @@ app.get('/talker/:id', async (req, res) => {
 app.post('/login', validateEmail, validatePassword, (req, res) => {
   const result = generateToken();
   return res.status(200).json({ token: result });
+});
+
+app.post('/talker',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkContent,
+  async (req, res) => {
+  const { name, age, talk } = req.body;
+  const id = await talkersUtils.generateId();
+  const talkers = await talkersUtils.getTalkers();
+
+  talkers.push({ id, name, age, talk });
+
+  await talkersUtils.setTalkers(talkers);
+
+  return res.status(201).json({ id, name, age, talk });
 });
 
 app.listen(PORT, () => {
