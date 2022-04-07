@@ -65,6 +65,35 @@ app.post('/talker',
   return res.status(201).json({ id, name, age, talk });
 });
 
+app.put('/talker/:id',
+  validateToken,
+  validateName,
+  validateAge,
+  validateTalk,
+  validateTalkContent,
+  async (req, res) => {
+  const { name, age, talk } = req.body;
+  const { id } = req.params;
+  const talkers = await talkersUtils.getTalkers();
+
+  const talkerIndex = talkers.findIndex((t) => t.id === parseInt(id, 10));
+
+  talkers[talkerIndex] = { ...talkers[talkerIndex], name, age, talk };
+
+  await talkersUtils.setTalkers(talkers);
+
+  return res.status(200).json({ id: parseInt(id, 10), name, age, talk });
+});
+
+app.delete('/talker/:id', validateToken, async (req, res) => {
+  const { id } = req.params;
+  const talkers = await talkersUtils.getTalkers();
+  const talkerIndex = talkers.findIndex((t) => t.id === parseInt(id, 10));
+  talkers.splice(talkerIndex, 1);
+  await talkersUtils.setTalkers(talkers);
+  res.status(204).end();
+});
+
 app.listen(PORT, () => {
   console.log('Online');
 });
