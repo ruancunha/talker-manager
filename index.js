@@ -2,6 +2,8 @@ const express = require('express');
 const bodyParser = require('body-parser');
 
 const talkersUtils = require('./fs-utils');
+const { validateEmail, validatePassword } = require('./services/validations');
+const { generateToken } = require('./services/token');
 
 const app = express();
 app.use(bodyParser.json());
@@ -31,6 +33,11 @@ app.get('/talker/:id', async (req, res) => {
   }
 
   return res.status(200).json(searchedTalker);
+});
+
+app.post('/login', validateEmail, validatePassword, (req, res) => {
+  const result = generateToken();
+  return res.status(200).json({ token: result });
 });
 
 app.listen(PORT, () => {
